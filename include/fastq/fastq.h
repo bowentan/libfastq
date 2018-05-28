@@ -26,41 +26,41 @@ typedef struct Read {
     int qual_length;
     int barcode_length;
 
-    char* id;
-    char* seq;
-    char* desc;
-    char* qual;
-    char* barcode;
-    char* barcode_qual;
+    char *id;
+    char *seq;
+    char *desc;
+    char *qual;
+    char *barcode;
+    char *barcode_qual;
 
-    qual_sys_t const* qual_sys;
+    qual_sys_t const *qual_sys;
 } read_t;
 
 typedef struct Fastq {
-    char const* file_name;
+    char const *file_name;
     // int file_name_length;
     gzFile file;
-    qual_sys_t const* qual_sys;
+    qual_sys_t const *qual_sys;
 } fastq_t;
 
 /* Fastq I/O control */
-fastq_t * fastq_open(char const* file_name, qual_sys_t const* qual_sys);
-void fastq_close(fastq_t* fastq);
-void fastq_seek(fastq_t* fastq, int nth_read);  // Skip (nth_read - 1) reads
-void fastq_reload(fastq_t* fastq);
+fastq_t *fastq_open(char const *file_name, qual_sys_t const *qual_sys);
+void fastq_close(fastq_t *fastq);
+void fastq_seek(fastq_t *fastq, int nth_read);  // Skip (nth_read - 1) reads
+void fastq_reload(fastq_t *fastq);
 
 /* Fastq quality system */
-static int _qual_compare(void const* a, void const* b);
-void fastq_check(fastq_t* fastq, int verbose_level);
-void convert_qual_sys(read_t* read, qual_sys_t const* to_qual_sys);
+static int _qual_compare(void const *a, void const *b);
+void fastq_check(fastq_t *fastq, int verbose_level);
+void convert_qual_sys(read_t *read, qual_sys_t const *to_qual_sys);
 
 /* Read */
-read_t* init_read(void);
-read_t* make_read(char const* id, char const* seq, char const* desc, 
-                  char const* qual, char const* barcode, qual_sys_t const* qual_sys);
-void copy_read(read_t const* src, read_t* dst);
-int get_read(fastq_t* fastq, read_t* read);
-void clear_read(read_t* read);
-void destroy_read(read_t* read);
+read_t *init_read(void);
+read_t *make_read(char const *id, char const *seq, char const *desc, 
+                  char const *qual, char const *barcode, qual_sys_t const *qual_sys);
+void copy_read(read_t const *src, read_t *dst);
+int get_read(fastq_t *fastq, read_t *read);
+void clear_read(read_t *read);
+void destroy_read(read_t *read);
 
 #endif  // FASTQ_FASTQ_H_

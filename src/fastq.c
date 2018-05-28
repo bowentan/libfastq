@@ -18,10 +18,10 @@
 // Project's other libraries
 #include "fastq/log.h"
 
-fastq_t* fastq_open(char const* file_name, qual_sys_t const* qual_sys) {
+fastq_t *fastq_open(char const *file_name, qual_sys_t const *qual_sys) {
     // int file_name_len = strlen(file_name);
 
-    fastq_t* fastq = malloc(sizeof(fastq_t));
+    fastq_t *fastq = malloc(sizeof(fastq_t));
     fastq->file_name = file_name;
     // fastq->file_name_length = file_name_len;
     // fastq->file_name = malloc(file_name_len);
@@ -39,7 +39,7 @@ fastq_t* fastq_open(char const* file_name, qual_sys_t const* qual_sys) {
     return fastq;
 }
 
-void fastq_close(fastq_t* fastq) {
+void fastq_close(fastq_t *fastq) {
     // free(fastq->file_name);
     fastq->file_name = NULL;
     gzclose(fastq->file);
@@ -47,27 +47,27 @@ void fastq_close(fastq_t* fastq) {
     fastq = NULL;
 }
 
-void fastq_seek(fastq_t* fastq, int nth_read) {
-    read_t* r = init_read();
+void fastq_seek(fastq_t *fastq, int nth_read) {
+    read_t *r = init_read();
     for (int i = 0; i < nth_read - 1; i++) {
         get_read(fastq, r);
     }
     destroy_read(r);
 }
 
-void fastq_reload(fastq_t* fastq) {
+void fastq_reload(fastq_t *fastq) {
     gzseek(fastq->file, 0, SEEK_SET);
 }
 
-static int _qual_compare(void const* a, void const* b) {
-    return *(char*)a - *(char*)b;
+static int _qual_compare(void const *a, void const *b) {
+    return *(char *)a - *(char *)b;
 }
 
-void fastq_check(fastq_t* fastq, int verbose_level) {
+void fastq_check(fastq_t *fastq, int verbose_level) {
     int n = 0;
     char min = 'i';
     char max = '!';
-    read_t* r = init_read();
+    read_t *r = init_read();
     while (n <= MAX_READ_CHECK && get_read(fastq, r) >= 0) {
         n++;
         char tmp_qual[r->seq_length + 1];
@@ -129,7 +129,7 @@ void fastq_check(fastq_t* fastq, int verbose_level) {
     }
 }
 
-void convert_qual_sys(read_t* read, qual_sys_t const* to_qual_sys) {
+void convert_qual_sys(read_t *read, qual_sys_t const *to_qual_sys) {
     // TODO (Bowen Tan): Difference between quality systems is measured by the difference
     // between minimum quality characters. The problem here is that ranges of all quality
     // systems are inconsistent, therefore I forced the value below the minimum quality
@@ -152,8 +152,8 @@ void convert_qual_sys(read_t* read, qual_sys_t const* to_qual_sys) {
 }
 
 /* Read */
-read_t* init_read(void) {
-    read_t* r = malloc(sizeof(read_t));
+read_t *init_read(void) {
+    read_t *r = malloc(sizeof(read_t));
     r->id_length = 0;
     r->seq_length = 0;
     r->desc_length = 0;
@@ -171,8 +171,8 @@ read_t* init_read(void) {
     return r;
 }
 
-read_t* make_read(char const* id, char const* seq, char const* desc,
-                  char const* qual, char const* barcode, qual_sys_t const* qual_sys) {
+read_t *make_read(char const *id, char const *seq, char const *desc,
+                  char const *qual, char const *barcode, qual_sys_t const *qual_sys) {
     read_t* r = malloc(sizeof(read_t));
     r->id_length = strlen(id);
     r->seq_length = strlen(seq);
@@ -206,7 +206,7 @@ read_t* make_read(char const* id, char const* seq, char const* desc,
     r->qual_sys = qual_sys;
 }
 
-void copy_read(read_t const* src, read_t* dst) {
+void copy_read(read_t const *src, read_t *dst) {
     clear_read(dst);
 
     dst->id_length = src->id_length;
@@ -236,7 +236,7 @@ void copy_read(read_t const* src, read_t* dst) {
     dst->qual_sys = src->qual_sys;
 }
 
-int get_read(fastq_t* fastq, read_t* read) {
+int get_read(fastq_t *fastq, read_t *read) {
     clear_read(read);
     int buffer_size = 8196;
     char buffer[buffer_size];
@@ -285,7 +285,7 @@ int get_read(fastq_t* fastq, read_t* read) {
     return 0;
 }
 
-void clear_read(read_t* read) {
+void clear_read(read_t *read) {
     free(read->id);
     free(read->seq);
     free(read->desc);
@@ -305,7 +305,7 @@ void clear_read(read_t* read) {
     read->barcode_length = 0;
 }
 
-void destroy_read(read_t* read) {
+void destroy_read(read_t *read) {
     clear_read(read);
     free(read);
     read = NULL;

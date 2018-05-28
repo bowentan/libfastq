@@ -19,8 +19,8 @@
 // Project's other libraries
 #include "fastq/log.h"
 
-barcode_t* init_barcode(void) {
-    barcode_t* barcode = malloc(sizeof(barcode_t));
+barcode_t *init_barcode(void) {
+    barcode_t *barcode = malloc(sizeof(barcode_t));
     barcode->length = 0;
     barcode->codes = NULL;
     barcode->count = 0;
@@ -28,8 +28,8 @@ barcode_t* init_barcode(void) {
     return barcode;
 }
 
-barcode_t* init_barcode_with_size(int size) {
-    barcode_t* barcode = malloc(sizeof(barcode_t));
+barcode_t *init_barcode_with_size(int size) {
+    barcode_t *barcode = malloc(sizeof(barcode_t));
     barcode->length = size;
     barcode->codes = malloc((size + 1) * sizeof(char));
     barcode->count = 0;
@@ -37,8 +37,8 @@ barcode_t* init_barcode_with_size(int size) {
     return barcode;
 }
 
-barcode_t* init_barcode_with_code(char const* codes) {
-    barcode_t* barcode = malloc(sizeof(barcode_t));
+barcode_t *init_barcode_with_code(char const *codes) {
+    barcode_t *barcode = malloc(sizeof(barcode_t));
     barcode->length = strlen(codes);
     barcode->codes = malloc((barcode->length + 1) * sizeof(char));
     strcpy(barcode->codes, codes);
@@ -47,24 +47,24 @@ barcode_t* init_barcode_with_code(char const* codes) {
     return barcode;
 }
 
-void destroy_barcode(barcode_t* barcode) {
+void destroy_barcode(barcode_t *barcode) {
     free(barcode->codes);
     barcode->codes = NULL;
     free(barcode);
     barcode = NULL;
 }
 
-static int _compare_barcode(void const* a, void const* b) {
-    return strcmp((*((barcode_t**)a))->codes, (*((barcode_t**)b))->codes);
+static int _compare_barcode(void const *a, void const *b) {
+    return strcmp((*((barcode_t **)a))->codes, (*((barcode_t **)b))->codes);
 }
 
-static void _add_barcode(white_list_t* wl, barcode_t* barcode) {
+static void _add_barcode(white_list_t *wl, barcode_t *barcode) {
     wl->size++;
-    wl->barcodes = realloc(wl->barcodes, wl->size * sizeof(barcode_t*));
+    wl->barcodes = realloc(wl->barcodes, wl->size * sizeof(barcode_t *));
     wl->barcodes[wl->size - 1] = barcode;
 }
 
-static int _check_duplicates(white_list_t* wl) {
+static int _check_duplicates(white_list_t *wl) {
     for (int i = 0; i < wl->size - 1; i++) {
         if (strcmp(wl->barcodes[i]->codes, wl->barcodes[i + 1]->codes) == 0) {
             return i;
@@ -73,15 +73,15 @@ static int _check_duplicates(white_list_t* wl) {
     return -1;
 }
 
-white_list_t* load_white_list(char const* file_name) {
+white_list_t *load_white_list(char const *file_name) {
     // int file_name_len = strlen(file_name);
     
-    white_list_t* wl = malloc(sizeof(white_list_t));
+    white_list_t *wl = malloc(sizeof(white_list_t));
     wl->file_name = file_name;
     // wl->file_name = malloc(file_name_len);
     // strcpy(wl->file_name, file_name);
     wl->size = 0;
-    wl->barcodes = malloc(wl->size * sizeof(barcode_t*));
+    wl->barcodes = malloc(wl->size * sizeof(barcode_t *));
 
     gzFile wl_file = gzopen(file_name, "rb");
     if (!wl_file) {
@@ -98,7 +98,7 @@ white_list_t* load_white_list(char const* file_name) {
         char bc[bc_len + 1];
         strncpy(bc, buffer, bc_len);
         bc[bc_len] = '\0';
-        barcode_t* barcode = init_barcode_with_code(bc);
+        barcode_t *barcode = init_barcode_with_code(bc);
         _add_barcode(wl, barcode);
     }
     gzclose(wl_file);
@@ -107,7 +107,7 @@ white_list_t* load_white_list(char const* file_name) {
     wl->observed_count = 0;
     wl->dummy_observed_count = 0;
 
-    qsort(wl->barcodes, wl->size, sizeof(barcode_t*), _compare_barcode);
+    qsort(wl->barcodes, wl->size, sizeof(barcode_t *), _compare_barcode);
     int dup_idx = _check_duplicates(wl);
     if (dup_idx >= 0) {
         fprintf(stderr, "%s -- Duplicate barcode \"%s\" is found.\n", 
@@ -117,15 +117,15 @@ white_list_t* load_white_list(char const* file_name) {
     return wl;
 }
 
-white_list_t* load_white_list_count(char const* file_name) {
+white_list_t *load_white_list_count(char const *file_name) {
     // int file_name_len = strlen(file_name);
     
-    white_list_t* wl = malloc(sizeof(white_list_t));
+    white_list_t *wl = malloc(sizeof(white_list_t));
     wl->file_name = file_name;
     // wl->file_name = malloc(file_name_len);
     // strcpy(wl->file_name, file_name);
     wl->size = 0;
-    wl->barcodes = malloc(wl->size * sizeof(barcode_t*));
+    wl->barcodes = malloc(wl->size * sizeof(barcode_t *));
 
     gzFile wl_file = gzopen(file_name, "rb");
     if (!wl_file) {
@@ -138,11 +138,11 @@ white_list_t* load_white_list_count(char const* file_name) {
     char buffer[buffer_size];
     int bc_len;
     int count;
-    char* token;
+    char *token;
     while (gzgets(wl_file, buffer, buffer_size) != 0) {
         token = strtok(buffer, "\t");
         bc_len = strlen(token);
-        barcode_t* barcode = init_barcode_with_size(bc_len);
+        barcode_t *barcode = init_barcode_with_size(bc_len);
         barcode->length = bc_len;
         strcpy(barcode->codes, token);
 
@@ -158,7 +158,7 @@ white_list_t* load_white_list_count(char const* file_name) {
 
     wl->barcode_length = wl->barcodes[0]->length;
 
-    qsort(wl->barcodes, wl->size, sizeof(barcode_t*), _compare_barcode);
+    qsort(wl->barcodes, wl->size, sizeof(barcode_t *), _compare_barcode);
     int dup_idx = _check_duplicates(wl);
     if (dup_idx >= 0) {
         fprintf(stderr, "%s -- Duplicate barcode \"%s\" is found.\n", 
@@ -168,7 +168,7 @@ white_list_t* load_white_list_count(char const* file_name) {
     return wl;
 }
 
-void destroy_white_list(white_list_t* wl) {
+void destroy_white_list(white_list_t *wl) {
     // free(wl->file_name);
     // wl->file_name = NULL;
     for (int i = 0; i < wl->size; i++) {
@@ -181,7 +181,7 @@ void destroy_white_list(white_list_t* wl) {
 
 }
 
-void write_white_list_count(white_list_t* wl, char const* file_name) {
+void write_white_list_count(white_list_t *wl, char const *file_name) {
     gzFile wl_out = gzopen(file_name, "wb");
     for (int i = 0; i < wl->size; i++) {
         gzprintf(wl_out, "%s\t%d\n", wl->barcodes[i]->codes, wl->barcodes[i]->count);
@@ -189,7 +189,7 @@ void write_white_list_count(white_list_t* wl, char const* file_name) {
     gzclose(wl_out);
 }
 
-void extract_barcode(read_t* read, int length) {
+void extract_barcode(read_t *read, int length) {
     free(read->barcode);
     read->barcode = NULL;
     free(read->barcode_qual);
@@ -204,7 +204,7 @@ void extract_barcode(read_t* read, int length) {
     strncpy(read->barcode_qual, read->qual, length);
     read->barcode_qual[length] = '\0';
 
-    char* tmp_copy = malloc((read->seq_length + 1) * sizeof(char));
+    char *tmp_copy = malloc((read->seq_length + 1) * sizeof(char));
     strcpy(tmp_copy, read->seq);
     read->seq_length -= length;
     free(read->seq);
@@ -225,14 +225,14 @@ void extract_barcode(read_t* read, int length) {
     tmp_copy = NULL;
 }
 
-void count_barcode(white_list_t* wl, fastq_t* fastq, int barcode_length) {
-    read_t* r = init_read();
-    barcode_t** found_barcode;
-    barcode_t* tmp_barcode = init_barcode_with_size(barcode_length);
+void count_barcode(white_list_t *wl, fastq_t *fastq, int barcode_length) {
+    read_t *r = init_read();
+    barcode_t **found_barcode;
+    barcode_t *tmp_barcode = init_barcode_with_size(barcode_length);
     while (get_read(fastq, r) >= 0) {
         extract_barcode(r, barcode_length);
         strcpy(tmp_barcode->codes, r->barcode);
-        found_barcode = bsearch(&tmp_barcode, wl->barcodes, wl->size, sizeof(barcode_t*), _compare_barcode);
+        found_barcode = bsearch(&tmp_barcode, wl->barcodes, wl->size, sizeof(barcode_t *), _compare_barcode);
         if (found_barcode != NULL) {
             (*found_barcode)->count++;
             wl->observed_count++;
@@ -243,7 +243,7 @@ void count_barcode(white_list_t* wl, fastq_t* fastq, int barcode_length) {
     destroy_read(r);
 }
 
-void calculate_barcode_freq(white_list_t* wl) {
+void calculate_barcode_freq(white_list_t *wl) {
     for (int i = 0; i < wl->size; i++) {
         wl->barcodes[i]->dummy_count = wl->barcodes[i]->count + 1;
         wl->dummy_observed_count += wl->barcodes[i]->dummy_count;
