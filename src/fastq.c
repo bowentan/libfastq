@@ -18,6 +18,11 @@
 // Project's other libraries
 #include "fastq/log.h"
 
+static int _qual_compare(void const *a, void const *b) {
+    return *(char *)a - *(char *)b;
+}
+
+
 fastq_t *fastq_open(char const *file_name, qual_sys_t const *qual_sys) {
     // int file_name_len = strlen(file_name);
 
@@ -59,10 +64,6 @@ void fastq_reload(fastq_t *fastq) {
     gzseek(fastq->file, 0, SEEK_SET);
 }
 
-static int _qual_compare(void const *a, void const *b) {
-    return *(char *)a - *(char *)b;
-}
-
 void fastq_check(fastq_t *fastq, int verbose_level) {
     int n = 0;
     char min = 'i';
@@ -85,37 +86,37 @@ void fastq_check(fastq_t *fastq, int verbose_level) {
     // TODO (Bowen Tan): here I set the quality system to be more likely the one where
     // the corresponding quality characters represent higher quality values, although 
     // multiple quality systems are possible in this quality range.
-    if (min < g_k_illumina_1_8.min_qual_char) {
-        if (max < g_k_illumina_1_8.max_qual_char) {
-            fastq->qual_sys = &g_k_sanger;
+    if (min < g_k_illumina_1_8->min_qual_char) {
+        if (max < g_k_illumina_1_8->max_qual_char) {
+            fastq->qual_sys = g_k_sanger;
         } else {
-            fastq->qual_sys = &g_k_illumina_1_8;
+            fastq->qual_sys = g_k_illumina_1_8;
         }
-    } else if (min < g_k_illumina_1_3.min_qual_char) {
-        if (max > g_k_illumina_1_8.max_qual_char) {
-            fastq->qual_sys = &g_k_solexa;
-        } else if (max > g_k_sanger.max_qual_char) {
-            fastq->qual_sys = &g_k_illumina_1_8;  // Prefer higher quality
+    } else if (min < g_k_illumina_1_3->min_qual_char) {
+        if (max > g_k_illumina_1_8->max_qual_char) {
+            fastq->qual_sys = g_k_solexa;
+        } else if (max > g_k_sanger->max_qual_char) {
+            fastq->qual_sys = g_k_illumina_1_8;  // Prefer higher quality
         } else {
-            fastq->qual_sys = &g_k_sanger;  // Prefer higher quality
+            fastq->qual_sys = g_k_sanger;  // Prefer higher quality
         }
-    } else if (min < g_k_illumina_1_5.min_qual_char) {
-        if (max > g_k_illumina_1_8.max_qual_char) {
-            fastq->qual_sys = &g_k_illumina_1_3;  // Prefer Illumina 1.3 to Solexa
-        } else if (max > g_k_sanger.max_qual_char) {
-            fastq->qual_sys = &g_k_illumina_1_8;
+    } else if (min < g_k_illumina_1_5->min_qual_char) {
+        if (max > g_k_illumina_1_8->max_qual_char) {
+            fastq->qual_sys = g_k_illumina_1_3;  // Prefer Illumina 1.3 to Solexa
+        } else if (max > g_k_sanger->max_qual_char) {
+            fastq->qual_sys = g_k_illumina_1_8;
         } else {
-            fastq->qual_sys = &g_k_sanger;
+            fastq->qual_sys = g_k_sanger;
         }
     } else {
-        if (max > g_k_illumina_1_3.max_qual_char) {
-            fastq->qual_sys = &g_k_illumina_1_5;
-        } else if (max > g_k_illumina_1_8.max_qual_char) {
-            fastq->qual_sys = &g_k_illumina_1_3;  // Prefer Illumina 1.3 to Solexa and Illumina 1.5
-        } else if (max > g_k_sanger.max_qual_char) {
-            fastq->qual_sys = &g_k_illumina_1_8;
+        if (max > g_k_illumina_1_3->max_qual_char) {
+            fastq->qual_sys = g_k_illumina_1_5;
+        } else if (max > g_k_illumina_1_8->max_qual_char) {
+            fastq->qual_sys = g_k_illumina_1_3;  // Prefer Illumina 1.3 to Solexa and Illumina 1.5
+        } else if (max > g_k_sanger->max_qual_char) {
+            fastq->qual_sys = g_k_illumina_1_8;
         } else {
-            fastq->qual_sys = &g_k_sanger;
+            fastq->qual_sys = g_k_sanger;
         }
     }
 

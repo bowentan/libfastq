@@ -19,6 +19,26 @@
 // Project's other libraries
 #include "fastq/log.h"
 
+static int _compare_barcode(void const *a, void const *b) {
+    return strcmp((*((barcode_t **)a))->codes, (*((barcode_t **)b))->codes);
+}
+
+static void _add_barcode(white_list_t *wl, barcode_t *barcode) {
+    wl->size++;
+    wl->barcodes = realloc(wl->barcodes, wl->size * sizeof(barcode_t *));
+    wl->barcodes[wl->size - 1] = barcode;
+}
+
+static int _check_duplicates(white_list_t *wl) {
+    for (int i = 0; i < wl->size - 1; i++) {
+        if (strcmp(wl->barcodes[i]->codes, wl->barcodes[i + 1]->codes) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
 barcode_t *init_barcode(void) {
     barcode_t *barcode = malloc(sizeof(barcode_t));
     barcode->length = 0;
@@ -52,25 +72,6 @@ void destroy_barcode(barcode_t *barcode) {
     barcode->codes = NULL;
     free(barcode);
     barcode = NULL;
-}
-
-static int _compare_barcode(void const *a, void const *b) {
-    return strcmp((*((barcode_t **)a))->codes, (*((barcode_t **)b))->codes);
-}
-
-static void _add_barcode(white_list_t *wl, barcode_t *barcode) {
-    wl->size++;
-    wl->barcodes = realloc(wl->barcodes, wl->size * sizeof(barcode_t *));
-    wl->barcodes[wl->size - 1] = barcode;
-}
-
-static int _check_duplicates(white_list_t *wl) {
-    for (int i = 0; i < wl->size - 1; i++) {
-        if (strcmp(wl->barcodes[i]->codes, wl->barcodes[i + 1]->codes) == 0) {
-            return i;
-        }
-    }
-    return -1;
 }
 
 white_list_t *load_white_list(char const *file_name) {

@@ -41,9 +41,6 @@ barcode_t *init_barcode_with_code(char const *codes);
 void destroy_barcode(barcode_t *barcode);
 
 /* White list */
-static int _compare_barcode(void const *a, void const *b);
-static void _add_barcode(white_list_t *wl, barcode_t *barcode);
-static int _check_duplicates(white_list_t *wl);
 
 // Read 
 white_list_t *load_white_list(char const *file_name);
@@ -54,7 +51,7 @@ void destroy_white_list(white_list_t *wl);
 void write_white_list_count(white_list_t *wl, char const *file_name);
 
 // Distribution and interaction with fastq
-barcode_t *get_barcode(read_t *read, int length);
+void extract_barcode(read_t *read, int length);
 void count_barcode(white_list_t *wl, fastq_t *fastq, int barcode_length);
 void calculate_barcode_freq(white_list_t *wl);
 

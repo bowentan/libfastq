@@ -50,7 +50,6 @@ void fastq_seek(fastq_t *fastq, int nth_read);  // Skip (nth_read - 1) reads
 void fastq_reload(fastq_t *fastq);
 
 /* Fastq quality system */
-static int _qual_compare(void const *a, void const *b);
 void fastq_check(fastq_t *fastq, int verbose_level);
 void convert_qual_sys(read_t *read, qual_sys_t const *to_qual_sys);
 
