@@ -54,7 +54,7 @@ void destroy_white_list(white_list_t *wl);
 void write_white_list_count(white_list_t *wl, char const *file_name);
 
 // Distribution and interaction with fastq
-void extract_barcode(read_t *read, int length);
+barcode_t *get_barcode(read_t *read, int length);
 void count_barcode(white_list_t *wl, fastq_t *fastq, int barcode_length);
 void calculate_barcode_freq(white_list_t *wl);
 

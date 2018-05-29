@@ -204,25 +204,25 @@ void extract_barcode(read_t *read, int length) {
     strncpy(read->barcode_qual, read->qual, length);
     read->barcode_qual[length] = '\0';
 
-    char *tmp_copy = malloc((read->seq_length + 1) * sizeof(char));
-    strcpy(tmp_copy, read->seq);
-    read->seq_length -= length;
-    free(read->seq);
-    read->seq = NULL;
-    read->seq = malloc((read->seq_length + 1) * sizeof(char));
-    strncpy(read->seq, tmp_copy + length, read->seq_length);
-    read->seq[read->seq_length] = '\0';
+    // char *tmp_copy = malloc((read->seq_length + 1) * sizeof(char));
+    // strcpy(tmp_copy, read->seq);
+    // read->seq_length -= length;
+    // free(read->seq);
+    // read->seq = NULL;
+    // read->seq = malloc((read->seq_length + 1) * sizeof(char));
+    // strncpy(read->seq, tmp_copy + length, read->seq_length);
+    // read->seq[read->seq_length] = '\0';
 
-    strcpy(tmp_copy, read->qual);
-    read->qual_length -= length;
-    free(read->qual);
-    read->qual = NULL;
-    read->qual = malloc((read->qual_length + 1) * sizeof(char));
-    strncpy(read->qual, tmp_copy + length, read->qual_length);
-    read->qual[read->seq_length] = '\0';
+    // strcpy(tmp_copy, read->qual);
+    // read->qual_length -= length;
+    // free(read->qual);
+    // read->qual = NULL;
+    // read->qual = malloc((read->qual_length + 1) * sizeof(char));
+    // strncpy(read->qual, tmp_copy + length, read->qual_length);
+    // read->qual[read->seq_length] = '\0';
 
-    free(tmp_copy);
-    tmp_copy = NULL;
+    // free(tmp_copy);
+    // tmp_copy = NULL;
 }
 
 void count_barcode(white_list_t *wl, fastq_t *fastq, int barcode_length) {
