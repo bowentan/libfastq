@@ -127,11 +127,12 @@ void fastq_check(fastq_t *fastq, int verbose_level) {
     fastq_reload(fastq);
     
     if (verbose_level > 0) {
-        fprintf(stdout, "%sBy checking the first %d reads, the maximum read length is %d,"
+        fprintf(stdout, "%sBy checking the first %d reads of %s, the maximum read length is %d,"
                         "the mininum quality character is '%c' and "
                         "the maximum quality character is '%c'. Thus the quality system of the given "
                         "fastq(s) is inferred as %s. If incorrect, please specify in options with '%s'.\n",
-                LOG_CHECK_INFO, n, fastq->max_read_length, min, max, fastq->qual_sys->name, "-s");
+                LOG_CHECK_INFO, n, fastq->file_name, 
+                fastq->max_read_length, min, max, fastq->qual_sys->name, "-s");
     }
 }
 
