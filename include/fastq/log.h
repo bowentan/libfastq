@@ -11,13 +11,13 @@
 #define FASTQ_LOG_H_
 
 /* I/O */
-#define LOG_IO_ERROR "[fastqtk | I/O] ERROR"
+#define LOG_IO_ERROR ""
 
 /* fastq */
-#define LOG_CHECK_INFO "[fastqtk | check] INFO"
-#define LOG_READ_ERROR "[fastqtk | read] ERROR"
+#define LOG_CHECK_INFO ""
+#define LOG_READ_ERROR ""
 
 /* barcode */
-#define LOG_BARCODE_ERROR "[fastqtk | barcode] ERROR"
+#define LOG_BARCODE_ERROR ""
 
 #endif  // FASTQ_LOG_H_

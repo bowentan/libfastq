@@ -40,6 +40,8 @@ typedef struct Fastq {
     char const *file_name;
     // int file_name_length;
     gzFile file;
+
+    int max_read_length;
     qual_sys_t const *qual_sys;
 } fastq_t;
 

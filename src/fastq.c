@@ -34,11 +34,12 @@ fastq_t *fastq_open(char const *file_name, qual_sys_t const *qual_sys) {
     fastq->file = gzopen(file_name, "rb");
 
     if (!fastq->file) {
-        fprintf(stderr, "%s -- Cannot open fastq file %s\n", 
+        fprintf(stderr, "%sCannot open fastq file %s\n", 
                 LOG_IO_ERROR, file_name);
         exit(1);
     }
 
+    fastq->max_read_length = 0;
     fastq->qual_sys = qual_sys;
 
     return fastq;
@@ -79,6 +80,9 @@ void fastq_check(fastq_t *fastq, int verbose_level) {
         }
         if (tmp_qual[r->seq_length - 1] > max) {
             max = tmp_qual[r->seq_length - 1];
+        }
+        if (r->seq_length > fastq->max_read_length) {
+            fastq->max_read_length = r->seq_length;
         }
     }
     destroy_read(r);
@@ -123,10 +127,11 @@ void fastq_check(fastq_t *fastq, int verbose_level) {
     fastq_reload(fastq);
     
     if (verbose_level > 0) {
-        fprintf(stdout, "%s -- By checking the first %d reads, the mininum quality character is '%c' and "
+        fprintf(stdout, "%sBy checking the first %d reads, the maximum read length is %d,"
+                        "the mininum quality character is '%c' and "
                         "the maximum quality character is '%c'. Thus the quality system of the given "
                         "fastq(s) is inferred as %s. If incorrect, please specify in options with '%s'.\n",
-                LOG_CHECK_INFO, n, min, max, fastq->qual_sys->name, "-s");
+                LOG_CHECK_INFO, n, fastq->max_read_length, min, max, fastq->qual_sys->name, "-s");
     }
 }
 
@@ -181,7 +186,7 @@ read_t *make_read(char const *id, char const *seq, char const *desc,
     r->qual_length = strlen(qual);
 
     if (r->seq_length != r->qual_length) {
-        fprintf(stderr, "%s -- The lengths of sequence and quality are inconsistent.\n",
+        fprintf(stderr, "%sThe lengths of sequence and quality are inconsistent.\n",
                 LOG_READ_ERROR);
     }
 
@@ -274,7 +279,7 @@ int get_read(fastq_t *fastq, read_t *read) {
     read->qual_sys = fastq->qual_sys;
 
     if (read->seq_length != read->qual_length) {
-        fprintf(stderr, "%s -- The lengths of sequence and quality are inconsistent.\n",
+        fprintf(stderr, "%sThe lengths of sequence and quality are inconsistent.\n",
                 LOG_READ_ERROR);
         exit(1);
     }
