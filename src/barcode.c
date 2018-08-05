@@ -3,7 +3,7 @@
 // @author: Bowen Tan, email: notebowentan@gmail.com
 //
 // Created on Apr. 26, 2018
-// Lastest revised on Apr. 26, 2018
+// Lastest revised on Jun. 05, 2018
 //
 // This file is the source file of barcodes and white list.
 
@@ -18,6 +18,8 @@
 
 // Project's other libraries
 #include "fastq/log.h"
+
+#define BUFFER_SIZE 8196
 
 static int _compare_barcode(void const *a, void const *b) {
     return strcmp((*((barcode_t **)a))->codes, (*((barcode_t **)b))->codes);
@@ -86,15 +88,14 @@ white_list_t *load_white_list(char const *file_name) {
 
     gzFile wl_file = gzopen(file_name, "rb");
     if (!wl_file) {
-        fprintf(stderr, "%s -- Cannot open white list file %s.\n", 
+        fprintf(stderr, "%sCannot open white list file %s.\n", 
                 LOG_IO_ERROR, file_name);
         exit(1);
     }
 
-    int buffer_size = 8196;
-    char buffer[buffer_size];
+    char buffer[BUFFER_SIZE];
     int bc_len;
-    while (gzgets(wl_file, buffer, buffer_size) != 0) {
+    while (gzgets(wl_file, buffer, BUFFER_SIZE) != 0) {
         bc_len = strlen(buffer) - 1;  // Excluding trailing '\n'
         char bc[bc_len + 1];
         strncpy(bc, buffer, bc_len);
@@ -111,7 +112,7 @@ white_list_t *load_white_list(char const *file_name) {
     qsort(wl->barcodes, wl->size, sizeof(barcode_t *), _compare_barcode);
     int dup_idx = _check_duplicates(wl);
     if (dup_idx >= 0) {
-        fprintf(stderr, "%s -- Duplicate barcode \"%s\" is found.\n", 
+        fprintf(stderr, "%sDuplicate barcode \"%s\" is found.\n", 
                 LOG_BARCODE_ERROR, wl->barcodes[dup_idx]->codes);
         exit(1);
     }
@@ -130,17 +131,16 @@ white_list_t *load_white_list_count(char const *file_name) {
 
     gzFile wl_file = gzopen(file_name, "rb");
     if (!wl_file) {
-        fprintf(stderr, "%s -- Cannot open white list file %s.\n", 
+        fprintf(stderr, "%sCannot open white list file %s.\n", 
                 LOG_IO_ERROR, file_name);
         exit(1);
     }
 
-    int buffer_size = 8196;
-    char buffer[buffer_size];
+    char buffer[BUFFER_SIZE];
     int bc_len;
     int count;
     char *token;
-    while (gzgets(wl_file, buffer, buffer_size) != 0) {
+    while (gzgets(wl_file, buffer, BUFFER_SIZE) != 0) {
         token = strtok(buffer, "\t");
         bc_len = strlen(token);
         barcode_t *barcode = init_barcode_with_size(bc_len);
@@ -162,7 +162,7 @@ white_list_t *load_white_list_count(char const *file_name) {
     qsort(wl->barcodes, wl->size, sizeof(barcode_t *), _compare_barcode);
     int dup_idx = _check_duplicates(wl);
     if (dup_idx >= 0) {
-        fprintf(stderr, "%s -- Duplicate barcode \"%s\" is found.\n", 
+        fprintf(stderr, "%sDuplicate barcode \"%s\" is found.\n", 
                 LOG_BARCODE_ERROR, wl->barcodes[dup_idx]->codes);
         exit(1);
     }

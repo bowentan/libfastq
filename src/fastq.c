@@ -3,7 +3,7 @@
 // @author: Bowen Tan, email: notebowentan@gmail.com
 //
 // Created on Apr. 26, 2018
-// Lastest revised on May. 3, 2018
+// Lastest revised on Jun. 19, 2018
 //
 // This file is the source file of reading fastq file.
 
@@ -70,7 +70,7 @@ void fastq_check(fastq_t *fastq, int verbose_level) {
     char min = 'i';
     char max = '!';
     read_t *r = init_read();
-    while (n <= MAX_READ_CHECK && get_read(fastq, r) >= 0) {
+    while (n <= MAX_READ_CHECK && get_read(fastq, r) > 0) {
         n++;
         char tmp_qual[r->seq_length + 1];
         strcpy(tmp_qual, r->qual);
@@ -127,7 +127,7 @@ void fastq_check(fastq_t *fastq, int verbose_level) {
     fastq_reload(fastq);
     
     if (verbose_level > 0) {
-        fprintf(stdout, "%sBy checking the first %d reads of %s, the maximum read length is %d,"
+        fprintf(stdout, "%sBy checking the first %d reads of %s, the maximum read length is %d, "
                         "the mininum quality character is '%c' and "
                         "the maximum quality character is '%c'. Thus the quality system of the given "
                         "fastq(s) is inferred as %s. If incorrect, please specify in options with '%s'.\n",
@@ -250,10 +250,10 @@ int get_read(fastq_t *fastq, read_t *read) {
     int size;
 
     gzgets(fastq->file, buffer, buffer_size);
-    size = strlen(buffer) - 1;
-    read->id_length = size;        // Exclude the trailing '\n'
+    size = strlen(buffer) - 2;
+    read->id_length = size;        // Exclude the trailing '\n' and leading '@'
     read->id = malloc(size + 1);
-    strncpy(read->id, buffer, size);
+    strncpy(read->id, buffer + 1, size);
     read->id[size] = '\0';
 
     gzgets(fastq->file, buffer, buffer_size);
@@ -286,10 +286,10 @@ int get_read(fastq_t *fastq, read_t *read) {
     }
 
     if (gzeof(fastq->file)) {
-        return -1;
+        return 0;
     }
 
-    return 0;
+    return 1;
 }
 
 void clear_read(read_t *read) {

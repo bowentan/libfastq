@@ -3,7 +3,7 @@
 // @author: Bowen Tan, email: notebowentan@gmail.com
 //
 // Created on Apr. 26, 2018
-// Lastest revised on Apr. 26, 2018
+// Lastest revised on Jun. 01, 2018
 //
 // This file is the header file of barcodes and white list.
 
@@ -13,7 +13,7 @@
 // Project's other libraries
 #include "fastq/fastq.h"
 
-typedef struct barcode_s {
+typedef struct Barcode {
     char *codes;
     int length;
 
@@ -22,7 +22,7 @@ typedef struct barcode_s {
     double frequency;
 } barcode_t;
 
-typedef struct white_list_s {
+typedef struct WhiteList {
     // int file_name_len;
     char const *file_name;
     int barcode_length;
